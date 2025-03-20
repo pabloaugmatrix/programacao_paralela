@@ -1,5 +1,10 @@
 // Pablo Augusto Matos da Silva
 // 2022015139
+/*
+Uso de funções com laços de repetição: Cálculo da regressão
+linear modularizado em funções específicas, cada uma com um laço de
+repetição.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
