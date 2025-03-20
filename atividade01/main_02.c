@@ -2,7 +2,8 @@
 // 2022015139
 /*
 Sem uso de funções e com um unico laço de repetição na main: 
-Execução dos cálculos diretamente dentro da função main sem modularização.
+Execução dos cálculos diretamente dentro da função main 
+em um unico laço e sem modularização.
 */
 
 #include <stdio.h>
