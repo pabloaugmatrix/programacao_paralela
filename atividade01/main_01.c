@@ -1,8 +1,8 @@
 // Pablo Augusto Matos da Silva
 // 2022015139
 /*
-Uso de funções com um unico laço de repetição na main: 
-Implementação de um unico laço de repetição na função main 
+Uso de funções com um unico laço de repetição na main:
+Implementação de um unico laço de repetição na função main
 chamando as demais funções para realização do cálculo.
 */
 
