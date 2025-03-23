@@ -2,6 +2,9 @@
 /// TODO: implementar main e calcular o desempenho de cada uma das funções
 
 #include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_SIZE (1024 * 8)
 
 /// @brief Encontra o valor máximo da soma de uma subsequência contígua no vetor
 /// utilizando uma abordagem de força bruta com complexidade T(n) = O(n²).
@@ -130,7 +133,63 @@ int Somax4(int A[], int n)
     return max;
 }
 
-int main()
-{
+/// @brief Função para ler os números do arquivo e armazená-los no vetor
+/// @param sequencia Vetor de inteiros onde os números serão armazenados
+/// @param n Número máximo de elementos a serem lidos
+/// @param nome_arquivo Nome do arquivo a ser lido
+/// @param arquivo Ponteiro para o arquivo a ser lido
+void ler_arquivo(int *sequencia, int n, char nome_arquivo[], FILE *arquivo) {
+    size_t i = 0;
+    while (i < n && fscanf(arquivo, "%d", &sequencia[i]) == 1) {
+        i++;
+    }
+    /*
+    printf("Arquivo: %s | Lidos %zu números:\n", nome_arquivo, i);
+    for (size_t j = 0; j < i; j++) {
+        printf("%d ", sequencia[j]);
+    }
+    printf("\n");
+    */
+}
+
+int main() {
+    int *sequencia;
+    int n = 1024;
+    int numero_arquivo = 1;
+    char nome_arquivo[20];
+    FILE *arquivo;
+
+    while (n <= MAX_SIZE) {
+        if (numero_arquivo == 2) {
+            numero_arquivo *= 2;
+            n *= 2;
+            continue;
+        }
+
+        sprintf(nome_arquivo, "%dM.dat", numero_arquivo);
+
+        arquivo = fopen(nome_arquivo, "r");  // MODO TEXTO
+        if (!arquivo) {
+            perror("Erro ao abrir o arquivo");
+            return 1;
+        }
+
+        sequencia = (int *)malloc(n * sizeof(int));
+        if (sequencia == NULL) {
+            perror("Erro ao alocar memória");
+            fclose(arquivo);
+            return 1;
+        }
+
+        // Chamada da função para ler o arquivo corretamente
+        ler_arquivo(sequencia, n, nome_arquivo, arquivo);
+
+        free(sequencia);
+        fclose(arquivo);
+
+        n *= 2;
+        numero_arquivo *= 2;
+    }
+
     return 0;
 }
