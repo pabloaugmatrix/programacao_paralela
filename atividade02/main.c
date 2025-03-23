@@ -1,166 +1,139 @@
-/// TODO: criar struct para retornar maximo e limites para adaptar retorno das funções
-/// TODO: implementar main e calcular o desempenho de cada uma das funções
+// Pablo Augusto Matos da Silva
+// Matricula : 2022015139
+// Benchmark dos Algoritmos de Soma Máxima de Subsequência
+
+/// TODO: comentar codigo para melhor legibilidade
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define MAX_SIZE (1024 * 8)
 
-/// @brief Encontra o valor máximo da soma de uma subsequência contígua no vetor
-/// utilizando uma abordagem de força bruta com complexidade T(n) = O(n²).
-///
-/// A solução testa cada elemento como ponto de partida e acumula a soma ao longo dos subsequentes,
-/// armazenando a maior soma encontrada.
-///
-/// @param A Vetor de inteiros
-/// @param n Numero de elementos
-/// @return Valor maximo da soma de uma subsequencia contida no vetor
+// Variável global para contar operações
+long long operacoes = 0;
+
+// Algoritmos de soma máxima com contagem de operações
 int Somax2(int A[], int n)
 {
-    int max = 0;
-    int aux;
+    int max = 0, aux;
+    operacoes = 0;
+
     for (int i = 0; i < n; i++)
     {
         aux = 0;
         for (int j = i; j < n; j++)
         {
             aux += A[j];
+            operacoes++; // Conta a soma
             if (aux > max)
             {
                 max = aux;
+                operacoes++; // Conta a comparação
             }
         }
     }
     return max;
 }
 
-/// @brief compara 3 numeros inteiros para definir qual o maior
-/// @param valor1 numero inteiro
-/// @param valor2 numero inteiro
-/// @param valor3 numero inteiro
-/// @return O maior valor dentre 3 numeros inteiros
-int Maximo(int valor1, int valor2, int valor3)
-{
-    if (valor1 > valor2 && valor1 > valor3)
-    {
-        return valor1;
-    }
-    if (valor2 > valor1 && valor2 > valor3)
-    {
-        return valor2;
-    }
-    if (valor3 > valor1 && valor3 > valor2)
-    {
-        return valor3;
-    }
-}
-
-/// @brief Calcula o valor máximo da soma de uma subsequência contida no vetor usando abordagem de Divisão e Conquista, com complexidade T(n) = O(n log n).
-///
-/// A função divide o vetor em duas partes e calcula a soma máxima de três formas possíveis:
-/// 1. A subsequência de soma máxima está totalmente à esquerda.
-/// 2. A subsequência de soma máxima está totalmente à direita.
-/// 3. A subsequência de soma máxima atravessa o meio do vetor.
-///
-/// @param A Vetor de inteiros
-/// @param e Índice inicial da subparte do vetor considerada
-/// @param d Índice final da subparte do vetor considerada
-/// @return Valor máximo da soma de uma subsequência contida no vetor
 int Somax3(int A[], int e, int d)
 {
-    int E_Lim = 0, D_Lim = 0, aux_E = 0, aux_D = 0;
-    int Lim = ((e + d) / 2);
-    int Esq, Dir;
     if (e == d)
     {
-        if (A[e] > 0)
-        {
-            return A[e];
-        }
-        return 0;
+        operacoes++;
+        return A[e] > 0 ? A[e] : 0;
     }
-    Esq = Somax3(A, e, Lim);
-    Dir = Somax3(A, Lim + 1, d);
-    for (int i = Lim; i >= e; i--) // pode ser que essa linha de problema na condição de parada
+
+    int Lim = (e + d) / 2;
+    int Esq = Somax3(A, e, Lim);
+    int Dir = Somax3(A, Lim + 1, d);
+    int E_Lim = 0, D_Lim = 0, aux_E = 0, aux_D = 0;
+
+    for (int i = Lim; i >= e; i--)
     {
         aux_E += A[i];
+        operacoes++; // Conta a soma
         if (aux_E > E_Lim)
         {
             E_Lim = aux_E;
+            operacoes++; // Conta a comparação
         }
     }
-    for (int i = Lim + 1; i <= d; i++) // mesmo problema do laço anterior
+
+    for (int i = Lim + 1; i <= d; i++)
     {
         aux_D += A[i];
+        operacoes++; // Conta a soma
         if (aux_D > D_Lim)
         {
             D_Lim = aux_D;
+            operacoes++; // Conta a comparação
         }
     }
-    return Maximo(Esq, Dir, (E_Lim + D_Lim));
+
+    operacoes++;
+    return (Esq > Dir) ? (Esq > (E_Lim + D_Lim) ? Esq : (E_Lim + D_Lim))
+                       : (Dir > (E_Lim + D_Lim) ? Dir : (E_Lim + D_Lim));
 }
 
-/// @brief Calcula o valor máximo da soma de uma subsequência contígua dentro do vetor,
-/// utilizando o Algoritmo de Kadane, com complexidade O(n).
-///
-/// O algoritmo percorre o vetor uma única vez, mantendo um acumulador da soma parcial.
-/// Se a soma parcial for negativa, é descartada e reiniciada a partir do próximo elemento.
-///
-/// @param A Vetor de inteiros
-/// @param n Numero de elementos
-/// @return Valor máximo da soma de uma subsequência contígua dentro do vetor
+int wrapper_Somax3(int *A, int n)
+{
+    operacoes = 0;
+    return Somax3(A, 0, n - 1);
+}
+
 int Somax4(int A[], int n)
 {
-    int max = 0, aux = 0, j = 0, k = 0;
-    int ini = 1, fim = 1;
+    int max = 0, aux = 0;
+    operacoes = 0;
+
     for (int i = 0; i < n; i++)
     {
         aux += A[i];
-        k += 1;
-        if (n == 0)
+        operacoes++; // Conta a soma
+
+        if (aux > max)
         {
             max = aux;
-            fim = k;
+            operacoes++; // Conta a comparação
         }
         else if (aux < 0)
         {
             aux = 0;
-            j = i + 1;
-            k = i + 1;
-            ini = j;
+            operacoes++; // Conta a atribuição
         }
     }
     return max;
 }
 
-/// @brief Função para ler os números do arquivo e armazená-los no vetor
-/// @param sequencia Vetor de inteiros onde os números serão armazenados
-/// @param n Número máximo de elementos a serem lidos
-/// @param nome_arquivo Nome do arquivo a ser lido
-/// @param arquivo Ponteiro para o arquivo a ser lido
-void ler_arquivo(int *sequencia, int n, char nome_arquivo[], FILE *arquivo) {
-    size_t i = 0;
-    while (i < n && fscanf(arquivo, "%d", &sequencia[i]) == 1) {
-        i++;
-    }
-    /*
-    printf("Arquivo: %s | Lidos %zu números:\n", nome_arquivo, i);
-    for (size_t j = 0; j < i; j++) {
-        printf("%d ", sequencia[j]);
-    }
-    printf("\n");
-    */
+void testar_algoritmo(int (*algoritmo)(int *, int), char *nome, int *sequencia, int n)
+{
+    clock_t inicio, fim;
+    double tempo_gasto;
+
+    operacoes = 0; // Zerar contador
+    inicio = clock();
+    int resultado = algoritmo(sequencia, n);
+    fim = clock();
+    tempo_gasto = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+
+    printf("%s -> Resultado: %d | Tempo: %.6f s | Operações: %lld\n",
+           nome, resultado, tempo_gasto, operacoes);
 }
 
-int main() {
+int main()
+{
     int *sequencia;
     int n = 1024;
     int numero_arquivo = 1;
     char nome_arquivo[20];
     FILE *arquivo;
 
-    while (n <= MAX_SIZE) {
-        if (numero_arquivo == 2) {
+    while (n <= MAX_SIZE)
+    {
+
+        if (numero_arquivo == 2)
+        {
             numero_arquivo *= 2;
             n *= 2;
             continue;
@@ -168,24 +141,37 @@ int main() {
 
         sprintf(nome_arquivo, "%dM.dat", numero_arquivo);
 
-        arquivo = fopen(nome_arquivo, "r");  // MODO TEXTO
-        if (!arquivo) {
+        arquivo = fopen(nome_arquivo, "r");
+        if (!arquivo)
+        {
             perror("Erro ao abrir o arquivo");
             return 1;
         }
 
         sequencia = (int *)malloc(n * sizeof(int));
-        if (sequencia == NULL) {
+        if (sequencia == NULL)
+        {
             perror("Erro ao alocar memória");
             fclose(arquivo);
             return 1;
         }
 
-        // Chamada da função para ler o arquivo corretamente
-        ler_arquivo(sequencia, n, nome_arquivo, arquivo);
+        size_t i = 0;
+        while (i < n && fscanf(arquivo, "%d", &sequencia[i]) == 1)
+        {
+            i++;
+        }
+        fclose(arquivo);
+
+        printf("Arquivo: %s | Tamanho: %d\n", nome_arquivo, n);
+
+        testar_algoritmo(Somax2, "Força Bruta O(n²)", sequencia, n);
+        testar_algoritmo(wrapper_Somax3, "Divisão e Conquista O(n log n)", sequencia, n);
+        testar_algoritmo(Somax4, "Kadane O(n)", sequencia, n);
+
+        printf("\n");
 
         free(sequencia);
-        fclose(arquivo);
 
         n *= 2;
         numero_arquivo *= 2;
