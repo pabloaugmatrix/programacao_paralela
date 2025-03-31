@@ -111,7 +111,7 @@ void testar_algoritmo(int (*algoritmo)(int *, int), char *nome, int *sequencia, 
     clock_t inicio, fim;
     double tempo_gasto;
 
-    operacoes = 0; // Zerar contador
+    operacoes = 0;
     inicio = clock();
     int resultado = algoritmo(sequencia, n);
     fim = clock();
