@@ -10,7 +10,7 @@ int main()
     FILE *file;
     int n = N_MIN;
     char filename[32];
-    char buffer[32]; // Buffer para converter número para string
+    char buffer[32];
     srand(262016);
 
     while (n <= N_MAX)
