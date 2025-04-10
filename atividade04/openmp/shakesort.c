@@ -4,6 +4,8 @@
 #include <time.h>
 #include <omp.h>
 
+#define MAX_NIVEL 2
+
 void troca(int *a, int *b)
 {
     int temp = *a;
@@ -13,31 +15,57 @@ void troca(int *a, int *b)
 
 void ShakeSort(int A[], int n)
 {
+    int trocado = 1;
     int e = 0;
     int i = n - 1;
 
-    while (e < i)
+    while (e < i && trocado)
     {
+        trocado = 0;
 
 #pragma omp parallel for
-        for (int j = e; j < i; j++)
+        for (int j = e; j < i; j += 2)
         {
             if (A[j] > A[j + 1])
             {
-#pragma omp critical
                 troca(&A[j], &A[j + 1]);
+#pragma omp atomic write
+                trocado = 1;
+            }
+        }
+
+#pragma omp parallel for
+        for (int j = e + 1; j < i; j += 2)
+        {
+            if (A[j] > A[j + 1])
+            {
+                troca(&A[j], &A[j + 1]);
+#pragma omp atomic write
+                trocado = 1;
             }
         }
 
         i--;
 
 #pragma omp parallel for
-        for (int j = i; j > e; j--)
+        for (int j = i; j > e; j -= 2)
         {
             if (A[j - 1] > A[j])
             {
-#pragma omp critical
                 troca(&A[j - 1], &A[j]);
+#pragma omp atomic write
+                trocado = 1;
+            }
+        }
+
+#pragma omp parallel for
+        for (int j = i - 1; j > e; j -= 2)
+        {
+            if (A[j - 1] > A[j])
+            {
+                troca(&A[j - 1], &A[j]);
+#pragma omp atomic write
+                trocado = 1;
             }
         }
 

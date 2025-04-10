@@ -4,6 +4,8 @@
 #include <time.h>
 #include <pthread.h>
 
+#define MAX_THREADS 2
+
 typedef struct
 {
     int *A;
@@ -58,12 +60,13 @@ void ShakeSort(int A[], int n)
     while (e < i)
     {
         pthread_t t1, t2;
-        Args args = {A, e, i};
+        Args args1 = {A, e, i - 1};
+        Args args2 = {A, e + 1, i};
 
-        pthread_create(&t1, NULL, ida, &args);
+        pthread_create(&t1, NULL, ida, &args1);
+        pthread_create(&t2, NULL, volta, &args2);
+
         pthread_join(t1, NULL);
-
-        pthread_create(&t2, NULL, volta, &args);
         pthread_join(t2, NULL);
 
         e++;
